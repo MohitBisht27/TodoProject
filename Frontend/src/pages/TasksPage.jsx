@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { DateRibbon } from "../components/DateRibbon";
 import { TodoDetailModal } from "../components/TodoDetailModal";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { useTasks } from "../context/TaskContext";
 import { CATEGORIES } from "../constants/constants";
 import {
@@ -116,27 +117,28 @@ export const TasksPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 pb-28 transition-colors">
       {/* Web Header Hero Section */}
-      <div className="bg-[#9D72FF] text-white shadow-xl">
+      <div className="bg-[#9D72FF] dark:bg-purple-950/80 text-white shadow-xl border-b border-purple-400/20">
         <div className="max-w-6xl mx-auto px-6 pt-6 pb-12">
           {/* Top Row */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate("/categories")}
-                className="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors"
+                className="p-2.5 rounded-2xl bg-white/10 dark:bg-white/15 hover:bg-white/20 transition-colors cursor-pointer"
                 aria-label="Categories"
               >
                 <LayoutGrid className="w-5 h-5 text-white" />
               </button>
-              <div className="flex items-center space-x-2 bg-white/15 px-3 py-1.5 rounded-xl text-xs font-bold">
+              <div className="flex items-center space-x-2 bg-white/15 dark:bg-white/20 px-3 py-1.5 rounded-xl text-xs font-bold">
                 <Calendar className="w-4 h-4" />
                 <span>{formattedHeaderDate}</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
+              <ThemeToggle />
               <button
                 onClick={() => navigate("/create-task")}
                 className="px-6 py-2.5 bg-white text-[#9D72FF] hover:bg-purple-50 font-bold rounded-2xl shadow-lg transition-all hover:scale-105 active:scale-95 text-sm flex items-center gap-2 cursor-pointer"
@@ -157,7 +159,7 @@ export const TasksPage = () => {
                   ? `${categoryFilter} Tasks`
                   : "Today's Schedule"}
               </h1>
-              <p className="text-sm font-semibold text-purple-100 mt-2">
+              <p className="text-sm font-semibold text-purple-100 dark:text-purple-200 mt-2">
                 {searchQuery
                   ? `Found ${filteredTodos.length} ${filteredTodos.length === 1 ? "match" : "matches"} for "${searchQuery}"`
                   : `Managing ${filteredTodos.length} ${filteredTodos.length === 1 ? "Task" : "Tasks"} for ${formattedHeaderDate}`}
@@ -171,7 +173,7 @@ export const TasksPage = () => {
                   setSelectedCategory(null);
                   navigate("/tasks");
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   !categoryFilter && !selectedCategory
                     ? "bg-white text-[#9D72FF] shadow-sm"
                     : "bg-white/20 text-white hover:bg-white/30"
@@ -188,7 +190,7 @@ export const TasksPage = () => {
                       setSelectedCategory(c.name);
                       navigate(`/tasks?category=${encodeURIComponent(c.name)}`);
                     }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                       isActive
                         ? "bg-white text-[#9D72FF] shadow-sm"
                         : "bg-white/20 text-white hover:bg-white/30"
@@ -205,19 +207,19 @@ export const TasksPage = () => {
 
       {/* Main Container - Overlapping Card */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-purple-50 space-y-8">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-purple-50 dark:border-gray-800 space-y-8 transition-colors">
           {/* Active Search Banner Indicator */}
           {searchQuery && (
-            <div className="flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-2xl">
-              <div className="flex items-center space-x-3 text-purple-900">
-                <Search className="w-5 h-5 text-[#9D72FF]" />
+            <div className="flex items-center justify-between p-4 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/60 rounded-2xl">
+              <div className="flex items-center space-x-3 text-purple-900 dark:text-purple-200">
+                <Search className="w-5 h-5 text-[#9D72FF] dark:text-purple-400" />
                 <span className="text-sm font-bold">
-                  Searching for: <strong className="text-[#9D72FF]">"{searchQuery}"</strong>
+                  Searching for: <strong className="text-[#9D72FF] dark:text-purple-300">"{searchQuery}"</strong>
                 </span>
               </div>
               <button
                 onClick={() => setSearchQuery("")}
-                className="flex items-center space-x-1 px-3 py-1 bg-white hover:bg-purple-100 text-[#9D72FF] rounded-xl text-xs font-bold border border-purple-200 transition-colors"
+                className="flex items-center space-x-1 px-3 py-1 bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-gray-700 text-[#9D72FF] dark:text-purple-300 rounded-xl text-xs font-bold border border-purple-200 dark:border-gray-700 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
                 <span>Clear Search</span>
@@ -233,28 +235,28 @@ export const TasksPage = () => {
           )}
 
           {/* Section Heading */}
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+          <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
               {searchQuery ? "Matching Todos" : "Task Checklist"}
             </h2>
-            <span className="text-xs font-bold text-gray-400">
+            <span className="text-xs font-bold text-gray-400 dark:text-gray-500">
               Click task for full details
             </span>
           </div>
 
           {/* Tasks List / Grid */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-purple-600">
+            <div className="flex flex-col items-center justify-center py-20 text-purple-600 dark:text-purple-400">
               <Loader2 className="w-10 h-10 animate-spin mb-3" />
               <p className="text-sm font-semibold">Syncing tasks with MongoDB server...</p>
             </div>
           ) : filteredTodos.length === 0 ? (
-            <div className="text-center py-20 bg-purple-50/40 rounded-3xl border-2 border-dashed border-purple-200 px-6">
-              <Search className="w-16 h-16 text-purple-300 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-800">
+            <div className="text-center py-20 bg-purple-50/40 dark:bg-gray-800/40 rounded-3xl border-2 border-dashed border-purple-200 dark:border-gray-700 px-6">
+              <Search className="w-16 h-16 text-purple-300 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
                 {searchQuery ? `No tasks found matching "${searchQuery}"` : "No tasks scheduled for this date"}
               </h3>
-              <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto">
                 {searchQuery
                   ? "Try checking your spelling or clearing the search query."
                   : "Create a task to keep track of your activities and goals."}
@@ -262,14 +264,14 @@ export const TasksPage = () => {
               {searchQuery ? (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all"
+                  className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all cursor-pointer"
                 >
                   Clear Search Filter
                 </button>
               ) : (
                 <button
                   onClick={() => navigate("/create-task")}
-                  className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all"
+                  className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all cursor-pointer"
                 >
                   + Create New Task
                 </button>
@@ -287,8 +289,8 @@ export const TasksPage = () => {
                     onClick={() => setSelectedTodoForModal(todo)}
                     className={`group relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-200 border shadow-xs hover:shadow-md hover:-translate-y-0.5 ${
                       isCompleted
-                        ? "bg-[#9D72FF] text-white border-purple-500"
-                        : "bg-[#F5EEFF] hover:bg-[#EFE2FF] text-gray-800 border-purple-100"
+                        ? "bg-[#9D72FF] dark:bg-purple-900 text-white border-purple-500 dark:border-purple-700"
+                        : "bg-[#F5EEFF] dark:bg-gray-800/90 hover:bg-[#EFE2FF] dark:hover:bg-gray-800 text-gray-800 dark:text-gray-100 border-purple-100 dark:border-gray-700"
                     }`}
                   >
                     {/* Left: Time slot + Task info */}
@@ -297,7 +299,7 @@ export const TasksPage = () => {
                         className={`text-xs font-bold whitespace-nowrap px-2.5 py-1 rounded-lg mt-0.5 ${
                           isCompleted
                             ? "bg-white/20 text-white"
-                            : "bg-white text-gray-600 shadow-2xs"
+                            : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 shadow-2xs"
                         }`}
                       >
                         {timeSlot}
@@ -309,7 +311,7 @@ export const TasksPage = () => {
                             className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
                               isCompleted
                                 ? "bg-white/20 text-white"
-                                : "bg-purple-200 text-purple-800"
+                                : "bg-purple-200 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300"
                             }`}
                           >
                             {todo.category || "General"}
@@ -318,7 +320,9 @@ export const TasksPage = () => {
 
                         <h3
                           className={`text-base font-bold leading-snug truncate ${
-                            isCompleted ? "line-through text-purple-100" : "text-gray-900"
+                            isCompleted
+                              ? "line-through text-purple-100 dark:text-purple-200"
+                              : "text-gray-900 dark:text-white"
                           }`}
                         >
                           {todo.title}
@@ -327,7 +331,9 @@ export const TasksPage = () => {
                         {todo.description && (
                           <p
                             className={`text-xs font-medium mt-1 truncate ${
-                              isCompleted ? "text-purple-200" : "text-gray-500"
+                              isCompleted
+                                ? "text-purple-200 dark:text-purple-300"
+                                : "text-gray-500 dark:text-gray-400"
                             }`}
                           >
                             {todo.description}
@@ -337,7 +343,9 @@ export const TasksPage = () => {
                         {todo.attachment?.url && (
                           <div
                             className={`flex items-center gap-1 mt-2 text-xs font-bold ${
-                              isCompleted ? "text-purple-100" : "text-[#9D72FF]"
+                              isCompleted
+                                ? "text-purple-100 dark:text-purple-200"
+                                : "text-[#9D72FF] dark:text-purple-400"
                             }`}
                           >
                             <Paperclip className="w-3.5 h-3.5" />
@@ -354,10 +362,10 @@ export const TasksPage = () => {
                     >
                       <button
                         onClick={() => navigate(`/edit-task/${todo._id || todo.id}`)}
-                        className={`p-2 rounded-xl transition-colors ${
+                        className={`p-2 rounded-xl transition-colors cursor-pointer ${
                           isCompleted
                             ? "text-purple-200 hover:text-white hover:bg-white/10"
-                            : "text-gray-400 hover:text-purple-600 hover:bg-white"
+                            : "text-gray-400 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-white dark:hover:bg-gray-700"
                         }`}
                         title="Edit Task"
                       >
@@ -366,10 +374,10 @@ export const TasksPage = () => {
 
                       <button
                         onClick={() => removeTask(todo._id || todo.id)}
-                        className={`p-2 rounded-xl transition-colors ${
+                        className={`p-2 rounded-xl transition-colors cursor-pointer ${
                           isCompleted
                             ? "text-purple-200 hover:text-white hover:bg-white/10"
-                            : "text-gray-400 hover:text-red-600 hover:bg-white"
+                            : "text-gray-400 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-white dark:hover:bg-gray-700"
                         }`}
                         title="Delete Task"
                       >
@@ -385,11 +393,11 @@ export const TasksPage = () => {
                         title="Toggle Status"
                       >
                         {isCompleted ? (
-                          <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-[#9D72FF] font-bold shadow-xs">
+                          <div className="w-7 h-7 bg-white dark:bg-purple-200 rounded-lg flex items-center justify-center text-[#9D72FF] font-bold shadow-xs">
                             ✓
                           </div>
                         ) : (
-                          <div className="w-7 h-7 border-2 border-[#9D72FF] rounded-lg bg-white shadow-2xs"></div>
+                          <div className="w-7 h-7 border-2 border-[#9D72FF] dark:border-purple-400 rounded-lg bg-white dark:bg-gray-900 shadow-2xs"></div>
                         )}
                       </button>
                     </div>

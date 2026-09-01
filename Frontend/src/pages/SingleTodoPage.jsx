@@ -103,28 +103,28 @@ export const SingleTodoPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-6">
-        <Loader2 className="w-10 h-10 text-[#9D72FF] animate-spin mb-3" />
-        <p className="text-sm font-semibold text-gray-500">Loading Todo item details...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col justify-center items-center p-6 text-gray-900 dark:text-gray-100">
+        <Loader2 className="w-10 h-10 text-[#9D72FF] dark:text-purple-400 animate-spin mb-3" />
+        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Loading Todo item details...</p>
       </div>
     );
   }
 
   if (error || !todo) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 text-gray-900 dark:text-gray-100">
         <Header title="Single Todo Details" showBack={true} />
         <div className="max-w-xl mx-auto mt-12 px-6">
-          <div className="bg-white rounded-3xl p-8 text-center shadow-lg border border-red-100">
-            <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 text-center shadow-lg border border-red-100 dark:border-red-900/40">
+            <div className="w-14 h-14 bg-red-50 dark:bg-red-950/50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Todo Not Found</h3>
-            <p className="text-sm text-gray-500 mb-6">{error || "Unable to display todo item."}</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Todo Not Found</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{error || "Unable to display todo item."}</p>
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => navigate("/tasks")}
-                className="px-6 py-2.5 bg-[#9D72FF] text-white font-bold text-sm rounded-2xl shadow-md hover:bg-[#8b5cf6] transition-all"
+                className="px-6 py-2.5 bg-[#9D72FF] text-white font-bold text-sm rounded-2xl shadow-md hover:bg-[#8b5cf6] transition-all cursor-pointer"
               >
                 Go to Tasks List
               </button>
@@ -138,7 +138,7 @@ export const SingleTodoPage = () => {
   const isCompleted = todo.status === "completed";
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 pb-28 transition-colors">
       {/* Top Header Bar */}
       <Header
         title="Todo Overview"
@@ -147,14 +147,14 @@ export const SingleTodoPage = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => navigate(`/edit-task/${todo._id || todo.id}`)}
-              className="p-2 text-gray-600 hover:text-[#9D72FF] hover:bg-purple-50 rounded-xl transition-all"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#9D72FF] dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-xl transition-all cursor-pointer"
               title="Edit Task"
             >
               <Edit3 className="w-5 h-5" />
             </button>
             <button
               onClick={handleDelete}
-              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-all cursor-pointer"
               title="Delete Task"
             >
               <Trash2 className="w-5 h-5" />
@@ -165,7 +165,7 @@ export const SingleTodoPage = () => {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
         {/* Main Todo Card */}
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-purple-50">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-purple-50 dark:border-gray-800 transition-colors">
           {/* Top Accent Strip */}
           <div
             className="h-3 w-full"
@@ -174,19 +174,19 @@ export const SingleTodoPage = () => {
 
           <div className="p-6 sm:p-8 space-y-6">
             {/* Meta Tags Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3.5 py-1 bg-purple-100 text-[#9D72FF] text-xs font-bold rounded-full uppercase tracking-wider">
+                <span className="px-3.5 py-1 bg-purple-100 dark:bg-purple-900/60 text-[#9D72FF] dark:text-purple-300 text-xs font-bold rounded-full uppercase tracking-wider">
                   {todo.category || "General"}
                 </span>
 
                 <span
                   className={`px-3.5 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${
                     todo.priority === "high"
-                      ? "bg-red-100 text-red-700"
+                      ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
                       : todo.priority === "low"
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-amber-100 text-amber-700"
+                      ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
+                      : "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
                   }`}
                 >
                   Priority: {todo.priority || "medium"}
@@ -194,7 +194,7 @@ export const SingleTodoPage = () => {
               </div>
 
               {/* URL Query Param badge indicator */}
-              <div className="text-[11px] font-mono text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+              <div className="text-[11px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
                 ID: {todo._id || todo.id}
               </div>
             </div>
@@ -202,8 +202,8 @@ export const SingleTodoPage = () => {
             {/* Title & Interactive Completion Toggle */}
             <div className="flex items-start justify-between gap-4">
               <h1
-                className={`text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight ${
-                  isCompleted ? "line-through text-gray-400" : ""
+                className={`text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight ${
+                  isCompleted ? "line-through text-gray-400 dark:text-gray-500" : ""
                 }`}
               >
                 {todo.title}
@@ -211,10 +211,10 @@ export const SingleTodoPage = () => {
 
               <button
                 onClick={handleToggleStatus}
-                className={`flex-shrink-0 p-3 rounded-2xl transition-all shadow-sm ${
+                className={`flex-shrink-0 p-3 rounded-2xl transition-all shadow-sm cursor-pointer ${
                   isCompleted
                     ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-purple-50 text-[#9D72FF] hover:bg-purple-100"
+                    : "bg-purple-50 dark:bg-gray-800 text-[#9D72FF] dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-gray-700"
                 }`}
                 title={isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
               >
@@ -228,25 +228,25 @@ export const SingleTodoPage = () => {
 
             {/* Description */}
             {todo.description ? (
-              <div className="text-gray-700 text-base leading-relaxed bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
+              <div className="text-gray-700 dark:text-gray-200 text-base leading-relaxed bg-gray-50/70 dark:bg-gray-800/70 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
                 {todo.description}
               </div>
             ) : (
-              <p className="text-gray-400 text-sm italic">No description provided.</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm italic">No description provided.</p>
             )}
 
             {/* Date & Time Metadata */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {todo.dueDate && (
-                <div className="flex items-center space-x-3 bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
-                  <div className="p-2.5 bg-white text-[#9D72FF] rounded-xl shadow-xs">
+                <div className="flex items-center space-x-3 bg-purple-50/50 dark:bg-gray-800/50 p-4 rounded-2xl border border-purple-100 dark:border-gray-700">
+                  <div className="p-2.5 bg-white dark:bg-gray-900 text-[#9D72FF] dark:text-purple-300 rounded-xl shadow-xs">
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <div className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                       Due Date
                     </div>
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
                       {new Date(todo.dueDate).toLocaleDateString("en-US", {
                         weekday: "short",
                         year: "numeric",
@@ -259,15 +259,15 @@ export const SingleTodoPage = () => {
               )}
 
               {todo.reminder && (
-                <div className="flex items-center space-x-3 bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
-                  <div className="p-2.5 bg-white text-[#9D72FF] rounded-xl shadow-xs">
+                <div className="flex items-center space-x-3 bg-purple-50/50 dark:bg-gray-800/50 p-4 rounded-2xl border border-purple-100 dark:border-gray-700">
+                  <div className="p-2.5 bg-white dark:bg-gray-900 text-[#9D72FF] dark:text-purple-300 rounded-xl shadow-xs">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <div className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                       Reminder
                     </div>
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
                       {new Date(todo.reminder).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -282,10 +282,10 @@ export const SingleTodoPage = () => {
             {Array.isArray(todo.subtasks) && todo.subtasks.length > 0 && (
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
                     Subtasks Checklist
                   </h3>
-                  <span className="text-xs font-bold text-[#9D72FF] bg-purple-100 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-bold text-[#9D72FF] dark:text-purple-300 bg-purple-100 dark:bg-purple-950 px-2.5 py-1 rounded-full">
                     {todo.subtasks.filter((s) => s.completed).length} of{" "}
                     {todo.subtasks.length} Completed
                   </span>
@@ -296,18 +296,18 @@ export const SingleTodoPage = () => {
                     <div
                       key={subtask._id || subtask.id}
                       onClick={() => handleSubtaskToggle(subtask._id || subtask.id)}
-                      className="flex items-center space-x-3 p-3 rounded-2xl bg-gray-50 hover:bg-purple-50 cursor-pointer transition-colors border border-gray-100"
+                      className="flex items-center space-x-3 p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/60 hover:bg-purple-50 dark:hover:bg-gray-800 cursor-pointer transition-colors border border-gray-100 dark:border-gray-700"
                     >
                       {subtask.completed ? (
-                        <CheckSquare className="w-5 h-5 text-[#9D72FF] flex-shrink-0" />
+                        <CheckSquare className="w-5 h-5 text-[#9D72FF] dark:text-purple-400 flex-shrink-0" />
                       ) : (
-                        <Square className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                        <Square className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
                       )}
                       <span
                         className={`text-sm font-medium ${
                           subtask.completed
-                            ? "line-through text-gray-400"
-                            : "text-gray-800"
+                            ? "line-through text-gray-400 dark:text-gray-500"
+                            : "text-gray-800 dark:text-gray-200"
                         }`}
                       >
                         {subtask.title}
@@ -321,10 +321,10 @@ export const SingleTodoPage = () => {
             {/* Notes Section */}
             {todo.notes && (
               <div className="space-y-2 pt-2">
-                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#9D72FF]" /> Additional Notes
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#9D72FF] dark:text-purple-400" /> Additional Notes
                 </h3>
-                <div className="p-4 bg-amber-50/60 rounded-2xl border border-amber-100 text-sm text-amber-900 whitespace-pre-wrap">
+                <div className="p-4 bg-amber-50/60 dark:bg-amber-950/40 rounded-2xl border border-amber-100 dark:border-amber-900/50 text-sm text-amber-900 dark:text-amber-200 whitespace-pre-wrap">
                   {todo.notes}
                 </div>
               </div>
@@ -333,20 +333,20 @@ export const SingleTodoPage = () => {
             {/* Attachment Section */}
             {todo.attachment?.url && (
               <div className="space-y-3 pt-2">
-                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
-                  <Paperclip className="w-4 h-4 text-[#9D72FF]" /> File Attachment
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <Paperclip className="w-4 h-4 text-[#9D72FF] dark:text-purple-400" /> File Attachment
                 </h3>
-                <div className="p-4 bg-purple-50/70 rounded-2xl border border-purple-100 space-y-3">
+                <div className="p-4 bg-purple-50/70 dark:bg-gray-800/70 rounded-2xl border border-purple-100 dark:border-gray-700 space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center space-x-3 overflow-hidden">
-                      <div className="p-2.5 bg-white rounded-xl text-[#9D72FF] shadow-xs flex-shrink-0">
+                      <div className="p-2.5 bg-white dark:bg-gray-900 rounded-xl text-[#9D72FF] dark:text-purple-300 shadow-xs flex-shrink-0">
                         <Paperclip className="w-5 h-5" />
                       </div>
                       <div className="truncate">
-                        <div className="text-sm font-bold text-gray-900 truncate">
+                        <div className="text-sm font-bold text-gray-900 dark:text-white truncate">
                           {todo.attachment.fileName || "Download Attachment"}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           {todo.attachment.fileType || "File"}
                           {todo.attachment.fileSize
                             ? ` • ${(todo.attachment.fileSize / 1024).toFixed(1)} KB`
@@ -368,7 +368,7 @@ export const SingleTodoPage = () => {
                   {/* Inline Image Preview */}
                   {(todo.attachment.fileType?.startsWith("image/") ||
                     /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(todo.attachment.url)) && (
-                    <div className="mt-2 rounded-2xl overflow-hidden border border-purple-200 bg-black/5 max-h-80 flex justify-center items-center">
+                    <div className="mt-2 rounded-2xl overflow-hidden border border-purple-200 dark:border-gray-700 bg-black/5 dark:bg-black/40 max-h-80 flex justify-center items-center">
                       <img
                         src={getAttachmentUrl(todo.attachment.url)}
                         alt={todo.attachment.fileName || "Attachment Preview"}
@@ -385,7 +385,7 @@ export const SingleTodoPage = () => {
             )}
 
             {/* Footer Timestamps & Controls */}
-            <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+            <div className="pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400 dark:text-gray-500">
               <div>
                 Created: {new Date(todo.createdAt || Date.now()).toLocaleString()}
               </div>
@@ -393,13 +393,13 @@ export const SingleTodoPage = () => {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => navigate(`/edit-task/${todo._id || todo.id}`)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" /> Edit Todo
                 </button>
                 <button
                   onClick={() => navigate("/tasks")}
-                  className="px-4 py-2 bg-[#9D72FF] hover:bg-[#8b5cf6] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                  className="px-4 py-2 bg-[#9D72FF] hover:bg-[#8b5cf6] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" /> Back to Tasks
                 </button>

@@ -38,10 +38,10 @@ export const DateRibbon = React.memo(() => {
           <button
             key={idx}
             onClick={() => setSelectedDate(dateObj)}
-            className={`flex flex-col items-center justify-center min-w-[50px] py-2.5 px-3 rounded-2xl transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center min-w-[50px] py-2.5 px-3 rounded-2xl transition-all duration-200 cursor-pointer ${
               isSelected
-                ? "bg-white text-[#9D72FF] font-bold shadow-lg scale-105"
-                : "bg-white/10 text-purple-100 hover:bg-white/20 font-medium"
+                ? "bg-white dark:bg-gray-800 text-[#9D72FF] dark:text-purple-300 font-bold shadow-lg scale-105 border border-transparent dark:border-purple-500/30"
+                : "bg-white/10 dark:bg-white/5 text-purple-100 hover:bg-white/20 dark:hover:bg-white/10 font-medium"
             }`}
           >
             <span className="text-[11px] uppercase tracking-wider opacity-80">{dayName}</span>

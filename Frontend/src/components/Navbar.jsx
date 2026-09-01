@@ -24,7 +24,7 @@ export const Navbar = React.memo(() => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-purple-100 shadow-lg transform-gpu">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-purple-100 dark:border-gray-800 shadow-lg transform-gpu transition-colors duration-200">
       <div className="max-w-lg mx-auto px-6 h-16 flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -36,13 +36,13 @@ export const Navbar = React.memo(() => {
               to={item.path}
               className={`flex flex-col items-center justify-center space-y-1 transition-transform duration-150 ${
                 isActive
-                  ? "text-[#9D72FF] scale-105 font-bold"
-                  : "text-gray-400 hover:text-gray-600 font-medium"
+                  ? "text-[#9D72FF] dark:text-purple-400 scale-105 font-bold"
+                  : "text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 font-medium"
               }`}
             >
               <div
                 className={`p-1.5 rounded-xl transition-colors ${
-                  isActive ? "bg-purple-100/70" : "bg-transparent"
+                  isActive ? "bg-purple-100/70 dark:bg-purple-900/40" : "bg-transparent"
                 }`}
               >
                 <Icon className="w-5 h-5" />
