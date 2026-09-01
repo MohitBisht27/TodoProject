@@ -113,4 +113,119 @@ const getTodoById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, todo, "Todo fetched successfully"));
 });
 
-export { createTodo, getAllTodos, getTodoById };
+const updateTodo = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  const todo = await Todo.findOne({ _id: id, isDeleted: false });
+
+  if (!todo) {
+    throw new ApiError(404, "Todo not found");
+  }
+
+  if (updates.status === "completed" && todo.status !== "completed") {
+    todo.completedAt = new Date();
+  } else if (updates.status && updates.status !== "completed") {
+    todo.completedAt = null;
+  }
+
+  if (req.file) {
+    if (todo.attachment && todo.attachment.publicId) {
+      await deleteFromCloudinary(todo.attachment.publicId);
+    }
+
+    const uploadedFile = await uploadOnCloudinary(req.file.path);
+    if (!uploadedFile)
+      throw new ApiError(500, "Failed to upload new attachment");
+
+    todo.attachment = {
+      url: uploadedFile.secure_url,
+      publicId: uploadedFile.public_id,
+      fileName: req.file.originalname,
+      fileType: req.file.mimetype,
+      fileSize: req.file.size,
+      uploadedAt: new Date(),
+    };
+  }
+
+  if (updates.removeAttachment === "true" && todo.attachment?.publicId) {
+    await deleteFromCloudinary(todo.attachment.publicId);
+    todo.attachment = null;
+  }
+
+  const allowedUpdates = [
+    "title",
+    "description",
+    "status",
+    "priority",
+    "dueDate",
+    "category",
+    "notes",
+    "color",
+    "reminder",
+  ];
+
+  allowedUpdates.forEach((field) => {
+    if (updates[field] !== undefined) todo[field] = updates[field];
+  });
+
+  if (updates.tags)
+    todo.tags =
+      typeof updates.tags === "string"
+        ? JSON.parse(updates.tags)
+        : updates.tags;
+  if (updates.subtasks)
+    todo.subtasks =
+      typeof updates.subtasks === "string"
+        ? JSON.parse(updates.subtasks)
+        : updates.subtasks;
+
+  await todo.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, todo, "Todo updated successfully"));
+});
+
+const deleteTodo = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const todo = await Todo.findOne({ _id: id, isDeleted: false });
+
+  if (!todo) {
+    throw new ApiError(404, "Todo not found");
+  }
+
+  todo.isDeleted = true;
+  todo.deletedAt = new Date();
+  await todo.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Todo moved to trash successfully"));
+});
+
+const toggleSubtask = asyncHandler(async (req, res) => {
+  const { id, subtaskId } = req.params;
+  const todo = await Todo.findOne({ _id: id, isDeleted: false });
+  if (!todo) throw new ApiError(404, "Todo not found");
+
+  const subtask = todo.subtasks.id(subtaskId);
+  if (!subtask) throw new ApiError(404, "Subtask not found");
+
+  subtask.completed = !subtask.completed;
+  await todo.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, todo, "Subtask status updated"));
+});
+
+export {
+  createTodo,
+  getAllTodos,
+  getTodoById,
+  updateTodo,
+  deleteTodo,
+  toggleSubtask,
+};
