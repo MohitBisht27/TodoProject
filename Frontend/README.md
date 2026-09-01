@@ -33,6 +33,19 @@ A modern, responsive Multi-Page Application (MPA) Todo management user interface
 
 ---
 
+## 🌐 Deployment Instructions
+
+### 🚀 Deploying to Netlify
+The repository includes a pre-configured `netlify.toml` file handling SPA rewrite rules and build settings.
+
+1. Connect your repository to **Netlify**.
+2. Set **Base directory**: `Frontend`
+3. Set **Build command**: `npm run build`
+4. Set **Publish directory**: `dist`
+5. Netlify will automatically detect [netlify.toml](file:///c:/Users/HP/OneDrive/Desktop/Project/TodoProject/Frontend/netlify.toml) and handle single/multi-page client routing (`/* -> /index.html`).
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
@@ -47,6 +60,7 @@ A modern, responsive Multi-Page Application (MPA) Todo management user interface
 
 ```text
 Frontend/
+├── netlify.toml             # Netlify deployment configuration
 ├── src/
 │   ├── assets/              # Static media assets
 │   ├── components/          # Reusable UI components
@@ -95,21 +109,3 @@ Create an optimized production bundle:
 npm run build
 ```
 The output files will be generated inside the `dist/` directory.
-
----
-
-## 🌐 API Proxy Configuration
-The Vite development server proxies requests from `/api` to the backend server running at `http://localhost:8000`:
-
-```js
-// vite.config.js
-server: {
-  port: 5173,
-  proxy: {
-    "/api": {
-      target: "http://localhost:8000",
-      changeOrigin: true,
-    },
-  },
-}
-```

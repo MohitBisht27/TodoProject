@@ -4,6 +4,20 @@ A scalable **Node.js** and **Express v5** RESTful API backing the Taskify Todo A
 
 ---
 
+## 🌐 Deployment Instructions
+
+### 🚀 Deploying to Render
+The repository contains `render.yaml` for zero-configuration deployments on Render.
+
+1. Log into **Render** and click **New + -> Blueprint**.
+2. Connect your Git repository.
+3. Render will automatically parse [render.yaml](file:///c:/Users/HP/OneDrive/Desktop/Project/TodoProject/render.yaml) and configure your **Web Service**.
+4. In the Render Dashboard, add your environment variables:
+   - `MONGODB_URI`: Your MongoDB Atlas Connection String
+   - `CORS_ORIGIN`: Your Frontend URL (e.g. `https://your-app.netlify.app`)
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Runtime**: [Node.js](https://nodejs.org/) (ES Modules)
@@ -69,6 +83,7 @@ A scalable **Node.js** and **Express v5** RESTful API backing the Taskify Todo A
 
 ```text
 Backend/
+├── render.yaml                 # Render deployment configuration
 ├── src/
 │   ├── controller/
 │   │   └── todo.controller.js  # Async route handlers for CRUD & subtask operations
