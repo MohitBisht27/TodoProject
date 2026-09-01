@@ -1,0 +1,394 @@
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
+import { Header } from "../components/Header";
+import { useTasks } from "../context/TaskContext";
+import { fetchTodoByIdService } from "../services/api";
+import {
+  Calendar,
+  Clock,
+  Tag,
+  Paperclip,
+  CheckSquare,
+  Square,
+  ArrowLeft,
+  Edit3,
+  Trash2,
+  CheckCircle2,
+  Circle,
+  FileText,
+  AlertCircle,
+  Loader2,
+  Share2,
+} from "lucide-react";
+
+export const SingleTodoPage = () => {
+  const [searchParams] = useSearchParams();
+  const params = useParams();
+  const navigate = useNavigate();
+  const { toggleTaskStatus, removeTask, toggleSubtask } = useTasks();
+
+  // Support receiving todo ID either via query parameter (?id=...) OR path param (/todo/:id)
+  const todoId = searchParams.get("id") || params.id;
+
+  const [todo, setTodo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!todoId) {
+      setError("No Todo ID provided in URL query parameters.");
+      setLoading(false);
+      return;
+    }
+
+    const loadSingleTodo = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetchTodoByIdService(todoId);
+        if (response.success && response.data) {
+          setTodo(response.data);
+        } else {
+          setError("Todo item not found.");
+        }
+      } catch (err) {
+        console.error("Failed to load todo:", err);
+        setError(
+          err.response?.data?.message || "Failed to retrieve todo details from backend server."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSingleTodo();
+  }, [todoId]);
+
+  const handleToggleStatus = async () => {
+    if (!todo) return;
+    const newStatus = todo.status === "completed" ? "todo" : "completed";
+    setTodo((prev) => ({ ...prev, status: newStatus }));
+    try {
+      await toggleTaskStatus(todo._id || todo.id);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSubtaskToggle = async (subtaskId) => {
+    if (!todo) return;
+    setTodo((prev) => ({
+      ...prev,
+      subtasks: prev.subtasks.map((s) =>
+        s._id === subtaskId || s.id === subtaskId ? { ...s, completed: !s.completed } : s
+      ),
+    }));
+    try {
+      await toggleSubtask(todo._id || todo.id, subtaskId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this todo item?")) {
+      try {
+        await removeTask(todo._id || todo.id);
+        navigate("/tasks");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-6">
+        <Loader2 className="w-10 h-10 text-[#9D72FF] animate-spin mb-3" />
+        <p className="text-sm font-semibold text-gray-500">Loading Todo item details...</p>
+      </div>
+    );
+  }
+
+  if (error || !todo) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <Header title="Single Todo Details" showBack={true} />
+        <div className="max-w-xl mx-auto mt-12 px-6">
+          <div className="bg-white rounded-3xl p-8 text-center shadow-lg border border-red-100">
+            <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-7 h-7" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Todo Not Found</h3>
+            <p className="text-sm text-gray-500 mb-6">{error || "Unable to display todo item."}</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => navigate("/tasks")}
+                className="px-6 py-2.5 bg-[#9D72FF] text-white font-bold text-sm rounded-2xl shadow-md hover:bg-[#8b5cf6] transition-all"
+              >
+                Go to Tasks List
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isCompleted = todo.status === "completed";
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-28">
+      {/* Top Header Bar */}
+      <Header
+        title="Todo Overview"
+        showBack={true}
+        rightAction={
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => navigate(`/edit-task/${todo._id || todo.id}`)}
+              className="p-2 text-gray-600 hover:text-[#9D72FF] hover:bg-purple-50 rounded-xl transition-all"
+              title="Edit Task"
+            >
+              <Edit3 className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+              title="Delete Task"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
+        }
+      />
+
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
+        {/* Main Todo Card */}
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-purple-50">
+          {/* Top Accent Strip */}
+          <div
+            className="h-3 w-full"
+            style={{ backgroundColor: todo.color || "#9D72FF" }}
+          />
+
+          <div className="p-6 sm:p-8 space-y-6">
+            {/* Meta Tags Header */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3.5 py-1 bg-purple-100 text-[#9D72FF] text-xs font-bold rounded-full uppercase tracking-wider">
+                  {todo.category || "General"}
+                </span>
+
+                <span
+                  className={`px-3.5 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${
+                    todo.priority === "high"
+                      ? "bg-red-100 text-red-700"
+                      : todo.priority === "low"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  Priority: {todo.priority || "medium"}
+                </span>
+              </div>
+
+              {/* URL Query Param badge indicator */}
+              <div className="text-[11px] font-mono text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                ID: {todo._id || todo.id}
+              </div>
+            </div>
+
+            {/* Title & Interactive Completion Toggle */}
+            <div className="flex items-start justify-between gap-4">
+              <h1
+                className={`text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight ${
+                  isCompleted ? "line-through text-gray-400" : ""
+                }`}
+              >
+                {todo.title}
+              </h1>
+
+              <button
+                onClick={handleToggleStatus}
+                className={`flex-shrink-0 p-3 rounded-2xl transition-all shadow-sm ${
+                  isCompleted
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-purple-50 text-[#9D72FF] hover:bg-purple-100"
+                }`}
+                title={isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
+              >
+                {isCompleted ? (
+                  <CheckCircle2 className="w-6 h-6" />
+                ) : (
+                  <Circle className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+
+            {/* Description */}
+            {todo.description ? (
+              <div className="text-gray-700 text-base leading-relaxed bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
+                {todo.description}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm italic">No description provided.</p>
+            )}
+
+            {/* Date & Time Metadata */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {todo.dueDate && (
+                <div className="flex items-center space-x-3 bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+                  <div className="p-2.5 bg-white text-[#9D72FF] rounded-xl shadow-xs">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Due Date
+                    </div>
+                    <div className="text-sm font-bold text-gray-900">
+                      {new Date(todo.dueDate).toLocaleDateString("en-US", {
+                        weekday: "short",
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {todo.reminder && (
+                <div className="flex items-center space-x-3 bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+                  <div className="p-2.5 bg-white text-[#9D72FF] rounded-xl shadow-xs">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Reminder
+                    </div>
+                    <div className="text-sm font-bold text-gray-900">
+                      {new Date(todo.reminder).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Subtasks Section */}
+            {Array.isArray(todo.subtasks) && todo.subtasks.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+                    Subtasks Checklist
+                  </h3>
+                  <span className="text-xs font-bold text-[#9D72FF] bg-purple-100 px-2.5 py-1 rounded-full">
+                    {todo.subtasks.filter((s) => s.completed).length} of{" "}
+                    {todo.subtasks.length} Completed
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {todo.subtasks.map((subtask) => (
+                    <div
+                      key={subtask._id || subtask.id}
+                      onClick={() => handleSubtaskToggle(subtask._id || subtask.id)}
+                      className="flex items-center space-x-3 p-3 rounded-2xl bg-gray-50 hover:bg-purple-50 cursor-pointer transition-colors border border-gray-100"
+                    >
+                      {subtask.completed ? (
+                        <CheckSquare className="w-5 h-5 text-[#9D72FF] flex-shrink-0" />
+                      ) : (
+                        <Square className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      )}
+                      <span
+                        className={`text-sm font-medium ${
+                          subtask.completed
+                            ? "line-through text-gray-400"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {subtask.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Notes Section */}
+            {todo.notes && (
+              <div className="space-y-2 pt-2">
+                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#9D72FF]" /> Additional Notes
+                </h3>
+                <div className="p-4 bg-amber-50/60 rounded-2xl border border-amber-100 text-sm text-amber-900 whitespace-pre-wrap">
+                  {todo.notes}
+                </div>
+              </div>
+            )}
+
+            {/* Attachment Section */}
+            {todo.attachment?.url && (
+              <div className="space-y-2 pt-2">
+                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                  <Paperclip className="w-4 h-4 text-[#9D72FF]" /> File Attachment
+                </h3>
+                <div className="p-4 bg-purple-50/70 rounded-2xl border border-purple-100 flex items-center justify-between">
+                  <div className="flex items-center space-x-3 overflow-hidden">
+                    <div className="p-2.5 bg-white rounded-xl text-[#9D72FF] shadow-xs">
+                      <Paperclip className="w-5 h-5" />
+                    </div>
+                    <div className="truncate">
+                      <div className="text-sm font-bold text-gray-900 truncate">
+                        {todo.attachment.fileName || "Download Attachment"}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {todo.attachment.fileType || "File"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    href={todo.attachment.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-[#9D72FF] hover:bg-[#8b5cf6] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex-shrink-0"
+                  >
+                    View File
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {/* Footer Timestamps & Controls */}
+            <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+              <div>
+                Created: {new Date(todo.createdAt || Date.now()).toLocaleString()}
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => navigate(`/edit-task/${todo._id || todo.id}`)}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5"
+                >
+                  <Edit3 className="w-3.5 h-3.5" /> Edit Todo
+                </button>
+                <button
+                  onClick={() => navigate("/tasks")}
+                  className="px-4 py-2 bg-[#9D72FF] hover:bg-[#8b5cf6] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Back to Tasks
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default SingleTodoPage;

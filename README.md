@@ -40,7 +40,33 @@ cd Frontend
 npm install
 npm run dev
 ```
-*Frontend runs at `http://localhost:5173`
+---
+
+## 🧪 Testing Locally Before Pushing to GitHub
+
+Before committing and pushing code updates to GitHub or deploying to production, run these local verification tests:
+
+### 1. Test Frontend Production Build
+```bash
+cd Frontend
+npm run build
+```
+> Checks for JSX syntax errors, missing module imports, broken routes, and verifies Tailwind asset compilation.
+
+### 2. Test Backend Node.js Syntax
+```bash
+cd Backend
+node --check src/index.js
+node --check src/app.js
+node --check src/routes/todo.routes.js
+node --check src/controller/todo.controller.js
+```
+> Verifies ES module imports, Express routing setup, and syntax validity without launching full server.
+
+### 3. Run & Verify Full Stack Locally
+1. **Start Backend**: `cd Backend && npm run dev` (Runs on `http://localhost:8000`)
+2. **Start Frontend**: `cd Frontend && npm run dev` (Runs on `http://localhost:5173`)
+3. **Verify API & UI**: Open `http://localhost:5173` to test Creating, Reading, Updating, and Deleting todos.
 
 ---
 
@@ -48,3 +74,4 @@ npm run dev
 
 - 🎨 **[Frontend Documentation](Frontend/README.md)**: UI design components, routes, state context, and styling details.
 - ⚙️ **[Backend Documentation](Backend/README.md)**: API endpoint specs, database schema definitions, and controllers.
+
