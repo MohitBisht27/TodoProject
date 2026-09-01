@@ -11,14 +11,26 @@ const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
 
+    if (
+      !process.env.CLOUDINARY_CLOUD_NAME ||
+      !process.env.CLOUDINARY_API_KEY ||
+      !process.env.CLOUDINARY_API_SECRET
+    ) {
+      console.log("Cloudinary env vars not set, preserving local file fallback");
+      return null;
+    }
+
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
     });
 
-    fs.unlinkSync(localFilePath);
+    // Safely remove local file after successful upload to Cloudinary
+    if (fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath);
+    }
     return response;
   } catch (error) {
-    fs.unlinkSync(localFilePath);
+    console.error("Cloudinary upload failed, preserving local file fallback:", error.message);
     return null;
   }
 };
@@ -37,3 +49,4 @@ const deleteFromCloudinary = async (fileUrl) => {
 };
 
 export { uploadOnCloudinary, deleteFromCloudinary };
+

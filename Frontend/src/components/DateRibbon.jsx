@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useTasks } from "../context/TaskContext";
 
-export const DateRibbon = () => {
+export const DateRibbon = React.memo(() => {
   const { selectedDate, setSelectedDate } = useTasks();
 
   const activeDate = selectedDate || new Date();
@@ -17,7 +17,7 @@ export const DateRibbon = () => {
       list.push(d);
     }
     return list;
-  }, [activeDate]);
+  }, [activeDate.toDateString()]);
 
   const isSameDay = (d1, d2) => {
     return (
@@ -51,6 +51,6 @@ export const DateRibbon = () => {
       })}
     </div>
   );
-};
+});
 
 export default DateRibbon;

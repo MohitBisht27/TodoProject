@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useParams, useNavigate, Link } from "react-router-dom";
 import { Header } from "../components/Header";
 import { useTasks } from "../context/TaskContext";
-import { fetchTodoByIdService } from "../services/api";
+import { fetchTodoByIdService, getAttachmentUrl } from "../services/api";
 import {
   Calendar,
   Clock,
@@ -332,33 +332,54 @@ export const SingleTodoPage = () => {
 
             {/* Attachment Section */}
             {todo.attachment?.url && (
-              <div className="space-y-2 pt-2">
+              <div className="space-y-3 pt-2">
                 <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                   <Paperclip className="w-4 h-4 text-[#9D72FF]" /> File Attachment
                 </h3>
-                <div className="p-4 bg-purple-50/70 rounded-2xl border border-purple-100 flex items-center justify-between">
-                  <div className="flex items-center space-x-3 overflow-hidden">
-                    <div className="p-2.5 bg-white rounded-xl text-[#9D72FF] shadow-xs">
-                      <Paperclip className="w-5 h-5" />
-                    </div>
-                    <div className="truncate">
-                      <div className="text-sm font-bold text-gray-900 truncate">
-                        {todo.attachment.fileName || "Download Attachment"}
+                <div className="p-4 bg-purple-50/70 rounded-2xl border border-purple-100 space-y-3">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center space-x-3 overflow-hidden">
+                      <div className="p-2.5 bg-white rounded-xl text-[#9D72FF] shadow-xs flex-shrink-0">
+                        <Paperclip className="w-5 h-5" />
                       </div>
-                      <div className="text-xs text-gray-500">
-                        {todo.attachment.fileType || "File"}
+                      <div className="truncate">
+                        <div className="text-sm font-bold text-gray-900 truncate">
+                          {todo.attachment.fileName || "Download Attachment"}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {todo.attachment.fileType || "File"}
+                          {todo.attachment.fileSize
+                            ? ` • ${(todo.attachment.fileSize / 1024).toFixed(1)} KB`
+                            : ""}
+                        </div>
                       </div>
                     </div>
+
+                    <a
+                      href={getAttachmentUrl(todo.attachment.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-[#9D72FF] hover:bg-[#8b5cf6] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex-shrink-0"
+                    >
+                      View File
+                    </a>
                   </div>
 
-                  <a
-                    href={todo.attachment.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-[#9D72FF] hover:bg-[#8b5cf6] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex-shrink-0"
-                  >
-                    View File
-                  </a>
+                  {/* Inline Image Preview */}
+                  {(todo.attachment.fileType?.startsWith("image/") ||
+                    /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(todo.attachment.url)) && (
+                    <div className="mt-2 rounded-2xl overflow-hidden border border-purple-200 bg-black/5 max-h-80 flex justify-center items-center">
+                      <img
+                        src={getAttachmentUrl(todo.attachment.url)}
+                        alt={todo.attachment.fileName || "Attachment Preview"}
+                        className="max-h-80 object-contain w-full rounded-2xl"
+                        onError={(e) => {
+                          console.error("Failed to render attachment preview image");
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

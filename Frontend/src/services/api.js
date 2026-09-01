@@ -58,4 +58,20 @@ export const toggleSubtaskService = async (todoId, subtaskId) => {
   return response.data;
 };
 
+// Helper utility to construct absolute attachment URL
+export const getAttachmentUrl = (url) => {
+  if (!url) return "";
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("data:")
+  ) {
+    return url;
+  }
+  const host =
+    import.meta.env.VITE_API_BASE_URL ||
+    (import.meta.env.DEV ? "http://localhost:8000" : "https://todoproject-q2g9.onrender.com");
+  return `${host.replace(/\/$/, "")}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 export default API;

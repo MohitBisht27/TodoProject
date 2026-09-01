@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import {
   fetchAllTodosService,
   createTodoService,
@@ -15,12 +15,12 @@ export const TaskProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Filters
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  // Fetch todos from backend without setting full-page blocking loader during real-time typing
+  // Fetch todos from backend without triggering global blocking loader after initial mount
   const fetchTodos = useCallback(async (isInitial = true) => {
     if (isInitial) setLoading(true);
     setError(null);
@@ -47,12 +47,12 @@ export const TaskProvider = ({ children }) => {
     fetchTodos(true);
   }, [fetchTodos]);
 
-  const addTask = async (todoData) => {
+  const addTask = useCallback(async (todoData) => {
     setLoading(true);
     try {
       const res = await createTodoService(todoData);
-      if (res.success) {
-        await fetchTodos(false);
+      if (res.success && res.data) {
+        setTodos((prev) => [res.data, ...prev]);
         return res.data;
       }
     } catch (err) {
@@ -61,12 +61,12 @@ export const TaskProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const editTask = async (id, updates) => {
+  const editTask = useCallback(async (id, updates) => {
     try {
       const res = await updateTodoService(id, updates);
-      if (res.success) {
+      if (res.success && res.data) {
         setTodos((prev) =>
           prev.map((t) => (t._id === id || t.id === id ? res.data : t))
         );
@@ -76,81 +76,110 @@ export const TaskProvider = ({ children }) => {
       console.error("Failed to edit todo:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const toggleTaskStatus = async (id) => {
-    const targetTodo = todos.find((t) => t._id === id || t.id === id);
-    if (!targetTodo) return;
+  const toggleTaskStatus = useCallback(async (id) => {
+    setTodos((prev) => {
+      const target = prev.find((t) => t._id === id || t.id === id);
+      if (!target) return prev;
+      const newStatus = target.status === "completed" ? "todo" : "completed";
 
-    const newStatus = targetTodo.status === "completed" ? "todo" : "completed";
+      // Async update in background
+      updateTodoService(id, { status: newStatus }).catch((err) => {
+        console.error("Failed to toggle status:", err);
+        // Revert on error
+        setTodos((latest) =>
+          latest.map((t) =>
+            t._id === id || t.id === id ? { ...t, status: target.status } : t
+          )
+        );
+      });
 
-    // Optimistic UI update
-    setTodos((prev) =>
-      prev.map((t) =>
+      return prev.map((t) =>
         t._id === id || t.id === id ? { ...t, status: newStatus } : t
-      )
-    );
-
-    try {
-      await updateTodoService(id, { status: newStatus });
-    } catch (err) {
-      console.error("Failed to toggle status:", err);
-      // Revert optimistic update on failure
-      setTodos((prev) =>
-        prev.map((t) =>
-          t._id === id || t.id === id ? { ...t, status: targetTodo.status } : t
-        )
       );
-      setError("Failed to update task status");
-    }
-  };
+    });
+  }, []);
 
-  const removeTask = async (id) => {
+  const removeTask = useCallback(async (id) => {
+    // Optimistic deletion
+    setTodos((prev) => prev.filter((t) => t._id !== id && t.id !== id));
     try {
       await deleteTodoService(id);
-      setTodos((prev) => prev.filter((t) => t._id !== id && t.id !== id));
     } catch (err) {
       console.error("Failed to delete task:", err);
       setError("Failed to delete task");
+      // Re-fetch to sync
+      fetchTodos(false);
     }
-  };
+  }, [fetchTodos]);
 
-  const toggleSubtask = async (todoId, subtaskId) => {
+  const toggleSubtask = useCallback(async (todoId, subtaskId) => {
+    setTodos((prev) =>
+      prev.map((t) => {
+        if (t._id !== todoId && t.id !== todoId) return t;
+        const updatedSubtasks = (t.subtasks || []).map((s) =>
+          s._id === subtaskId || s.id === subtaskId
+            ? { ...s, completed: !s.completed }
+            : s
+        );
+        return { ...t, subtasks: updatedSubtasks };
+      })
+    );
+
     try {
       const res = await toggleSubtaskService(todoId, subtaskId);
-      if (res.success) {
+      if (res.success && res.data) {
         setTodos((prev) =>
-          prev.map((t) => (t._id === todoId ? res.data : t))
+          prev.map((t) => (t._id === todoId || t.id === todoId ? res.data : t))
         );
       }
     } catch (err) {
       console.error("Failed to toggle subtask:", err);
-      setError("Failed to update subtask");
+      fetchTodos(false);
     }
-  };
+  }, [fetchTodos]);
+
+  // Memoize context value object to prevent re-rendering all child components on every frame
+  const contextValue = useMemo(
+    () => ({
+      todos,
+      loading,
+      error,
+      selectedDate,
+      setSelectedDate,
+      selectedCategory,
+      setSelectedCategory,
+      searchQuery,
+      setSearchQuery,
+      statusFilter,
+      setStatusFilter,
+      fetchTodos,
+      addTask,
+      editTask,
+      toggleTaskStatus,
+      removeTask,
+      toggleSubtask,
+    }),
+    [
+      todos,
+      loading,
+      error,
+      selectedDate,
+      selectedCategory,
+      searchQuery,
+      statusFilter,
+      fetchTodos,
+      addTask,
+      editTask,
+      toggleTaskStatus,
+      removeTask,
+      toggleSubtask,
+    ]
+  );
 
   return (
-    <TaskContext.Provider
-      value={{
-        todos,
-        loading,
-        error,
-        selectedDate,
-        setSelectedDate,
-        selectedCategory,
-        setSelectedCategory,
-        searchQuery,
-        setSearchQuery,
-        statusFilter,
-        setStatusFilter,
-        fetchTodos,
-        addTask,
-        editTask,
-        toggleTaskStatus,
-        removeTask,
-        toggleSubtask,
-      }}
-    >
+    <TaskContext.Provider value={contextValue}>
       {children}
     </TaskContext.Provider>
   );

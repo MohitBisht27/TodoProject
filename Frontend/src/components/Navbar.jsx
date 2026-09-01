@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { LayoutGrid, CheckSquare, PlusCircle, CheckCircle2 } from "lucide-react";
 
-export const Navbar = () => {
+export const Navbar = React.memo(() => {
   const location = useLocation();
 
   const navItems = [
@@ -24,7 +24,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-lg border-t border-purple-100 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-purple-100 shadow-lg transform-gpu">
       <div className="max-w-lg mx-auto px-6 h-16 flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -34,7 +34,7 @@ export const Navbar = () => {
             <NavLink
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center space-y-1 transition-transform duration-150 ${
                 isActive
                   ? "text-[#9D72FF] scale-105 font-bold"
                   : "text-gray-400 hover:text-gray-600 font-medium"
@@ -54,6 +54,6 @@ export const Navbar = () => {
       </div>
     </nav>
   );
-};
+});
 
 export default Navbar;
