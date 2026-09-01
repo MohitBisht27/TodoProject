@@ -40,7 +40,7 @@ cd Frontend
 npm install
 npm run dev
 ```
-*Frontend runs at `http://localhost:5174` (or `http://localhost:5173`)*
+*Frontend runs at `http://localhost:5173`
 
 ---
 
