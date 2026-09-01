@@ -4,6 +4,13 @@ A modern, responsive Multi-Page Application (MPA) Todo management user interface
 
 ---
 
+## 🌐 Live Application Link
+
+- 🎨 **Deployed Web App**: [https://kaamtodo.netlify.app](https://kaamtodo.netlify.app)
+- ⚙️ **Connected Backend API**: [https://todoproject-q2g9.onrender.com](https://todoproject-q2g9.onrender.com)
+
+---
+
 ## ✨ Features
 
 - **📂 Activity Categories Hub (`/categories`)**:
@@ -33,16 +40,14 @@ A modern, responsive Multi-Page Application (MPA) Todo management user interface
 
 ---
 
-## 🌐 Deployment Instructions
+## 🌐 Netlify Deployment Settings
 
-### 🚀 Deploying to Netlify
 The repository includes a pre-configured `netlify.toml` file handling SPA rewrite rules and build settings.
 
-1. Connect your repository to **Netlify**.
-2. Set **Base directory**: `Frontend`
-3. Set **Build command**: `npm run build`
-4. Set **Publish directory**: `dist`
-5. Netlify will automatically detect [netlify.toml](file:///c:/Users/HP/OneDrive/Desktop/Project/TodoProject/Frontend/netlify.toml) and handle single/multi-page client routing (`/* -> /index.html`).
+- **Deployed URL**: [https://kaamtodo.netlify.app](https://kaamtodo.netlify.app)
+- **Base directory**: `Frontend`
+- **Build command**: `npm run build`
+- **Publish directory**: `dist`
 
 ---
 
@@ -56,54 +61,23 @@ The repository includes a pre-configured `netlify.toml` file handling SPA rewrit
 
 ---
 
-## 📁 Directory Structure
-
-```text
-Frontend/
-├── netlify.toml             # Netlify deployment configuration
-├── src/
-│   ├── assets/              # Static media assets
-│   ├── components/          # Reusable UI components
-│   │   ├── DateRibbon.jsx   # Horizontal date picker ribbon
-│   │   ├── Header.jsx       # Mobile header bar
-│   │   ├── Navbar.jsx       # Desktop top nav & mobile bottom navigation
-│   │   └── TodoDetailModal.jsx # Task detail popup modal
-│   ├── constants/           # Categories, priorities, colors constants
-│   ├── context/             # Global TaskContext for state & API dispatches
-│   ├── pages/               # MPA route views
-│   │   ├── CategoriesPage.jsx # Screen 1: Category Hub
-│   │   ├── CreateTaskPage.jsx # Screen 2: Task Form
-│   │   └── TasksPage.jsx      # Screen 3: Today's Tasks
-│   ├── services/            # Axios API service endpoints (`api.js`)
-│   ├── App.jsx              # Router configuration
-│   ├── index.css            # Tailwind directives & utility styles
-│   └── main.jsx             # React entry point
-├── package.json
-└── vite.config.js           # Vite server configuration & API proxy
-```
-
----
-
 ## ⚡ Getting Started
 
-### 1. Prerequisites
-Ensure **Node.js** (v18+) is installed on your system.
-
-### 2. Installation
+### 1. Installation
 Navigate to the `Frontend` directory and install dependencies:
 ```bash
 cd Frontend
 npm install
 ```
 
-### 3. Running Dev Server
+### 2. Running Dev Server
 Start the Vite development server:
 ```bash
 npm run dev
 ```
 The application will open locally at `http://localhost:5174` (or `http://localhost:5173`).
 
-### 4. Building for Production
+### 3. Building for Production
 Create an optimized production bundle:
 ```bash
 npm run build

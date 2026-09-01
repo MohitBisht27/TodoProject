@@ -4,6 +4,13 @@ A feature-rich, full-stack **MERN** (MongoDB, Express, React, Node.js) Todo appl
 
 ---
 
+## 🌐 Live Deployed Application
+
+- 🎨 **Live Frontend Web App (Netlify)**: [https://kaamtodo.netlify.app](https://kaamtodo.netlify.app)
+- ⚙️ **Live Backend REST API (Render)**: [https://todoproject-q2g9.onrender.com/api/v1/todos](https://todoproject-q2g9.onrender.com/api/v1/todos)
+
+---
+
 ## 🌟 Architecture Overview
 
 ```text

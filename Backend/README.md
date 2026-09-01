@@ -4,17 +4,21 @@ A scalable **Node.js** and **Express v5** RESTful API backing the Taskify Todo A
 
 ---
 
-## 🌐 Deployment Instructions
+## 🌐 Live API Service
 
-### 🚀 Deploying to Render
+- ⚙️ **Live Backend Service (Render)**: [https://todoproject-q2g9.onrender.com](https://todoproject-q2g9.onrender.com)
+- 🎨 **Connected Frontend App (Netlify)**: [https://kaamtodo.netlify.app](https://kaamtodo.netlify.app)
+
+---
+
+## 🌐 Render Deployment Settings
+
 The repository contains `render.yaml` for zero-configuration deployments on Render.
 
-1. Log into **Render** and click **New + -> Blueprint**.
-2. Connect your Git repository.
-3. Render will automatically parse [render.yaml] and configure your **Web Service**.
-4. In the Render Dashboard, add your environment variables:
-   - `MONGODB_URI`: Your MongoDB Atlas Connection String
-   - `CORS_ORIGIN`: Your Frontend URL (e.g. `https://your-app.netlify.app`)
+- **Deployed API URL**: `https://todoproject-q2g9.onrender.com/api/v1/todos`
+- **Environment Variables**:
+  - `MONGODB_URI`: MongoDB Atlas Connection String
+  - `CORS_ORIGIN`: `https://kaamtodo.netlify.app`
 
 ---
 
@@ -104,23 +108,6 @@ Backend/
 │   └── index.js                # Server entry point & DB connection initialization
 ├── .env                        # Environment configuration variables
 └── package.json
-```
-
----
-
-## ⚙️ Environment Variables (`.env`)
-
-Create a `.env` file in the `Backend/` directory with the following variables:
-
-```env
-PORT=8000
-MONGODB_URI=mongodb://localhost:27017/todoproject
-CORS_ORIGIN=*
-
-# Cloudinary Storage Credentials (Optional)
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ---
