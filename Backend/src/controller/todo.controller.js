@@ -72,4 +72,45 @@ const createTodo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, todo, "Todo created successfully"));
 });
 
-export { createTodo };
+const getAllTodos = asyncHandler(async (req, res) => {
+  const { status, priority, category, search, sortBy, order } = req.query;
+  const query = { isDeleted: false };
+  if (status) query.status = status;
+  if (priority) query.priority = priority;
+  if (category) query.category = category;
+
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const sortOptions = {};
+  if (sortBy) {
+    sortOptions[sortBy] = order === "desc" ? -1 : 1;
+  } else {
+    sortOptions.createdAt = -1;
+  }
+
+  const todos = await Todo.find(query).sort(sortOptions);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, todos, "Todos fetched successfully"));
+});
+const getTodoById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const todo = await Todo.findOne({ _id: id, isDeleted: false });
+
+  if (!todo) {
+    throw new ApiError(404, "Todo not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, todo, "Todo fetched successfully"));
+});
+
+export { createTodo, getAllTodos, getTodoById };
