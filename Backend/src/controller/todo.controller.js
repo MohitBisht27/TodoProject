@@ -29,27 +29,55 @@ const createTodo = asyncHandler(async (req, res) => {
   let attachmentData = null;
   if (req.file) {
     const uploadedFile = await uploadOnCloudinary(req.file.path);
-    if (!uploadedFile) {
-      throw new ApiError(500, "Failed to upload attachment");
+    if (uploadedFile) {
+      attachmentData = {
+        url: uploadedFile.secure_url,
+        publicId: uploadedFile.public_id,
+        fileName: req.file.originalname,
+        fileType: req.file.mimetype,
+        fileSize: req.file.size,
+        uploadedAt: new Date(),
+      };
+    } else {
+      // Fallback for local storage when Cloudinary credentials are not configured
+      attachmentData = {
+        url: `/temp/${req.file.filename || req.file.originalname}`,
+        publicId: null,
+        fileName: req.file.originalname,
+        fileType: req.file.mimetype,
+        fileSize: req.file.size,
+        uploadedAt: new Date(),
+      };
     }
-
-    attachmentData = {
-      url: uploadedFile.secure_url,
-      publicId: uploadedFile.public_id,
-      fileName: req.file.originalname,
-      fileType: req.file.mimetype,
-      fileSize: req.file.size,
-      uploadedAt: new Date(),
-    };
   }
 
+  // Safe parsing for tags
   let parsedTags = [];
-  if (tags) parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
+  if (tags) {
+    if (Array.isArray(tags)) {
+      parsedTags = tags;
+    } else if (typeof tags === "string") {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (e) {
+        parsedTags = tags.split(",").map((t) => t.trim()).filter(Boolean);
+      }
+    }
+  }
 
+  // Safe parsing for subtasks
   let parsedSubtasks = [];
-  if (subtasks)
-    parsedSubtasks =
-      typeof subtasks === "string" ? JSON.parse(subtasks) : subtasks;
+  if (subtasks) {
+    if (Array.isArray(subtasks)) {
+      parsedSubtasks = subtasks;
+    } else if (typeof subtasks === "string") {
+      try {
+        parsedSubtasks = JSON.parse(subtasks);
+      } catch (e) {
+        parsedSubtasks = [];
+      }
+    }
+  }
 
   const todo = await Todo.create({
     title: title.trim(),
@@ -99,6 +127,7 @@ const getAllTodos = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, todos, "Todos fetched successfully"));
 });
+
 const getTodoById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -135,17 +164,25 @@ const updateTodo = asyncHandler(async (req, res) => {
     }
 
     const uploadedFile = await uploadOnCloudinary(req.file.path);
-    if (!uploadedFile)
-      throw new ApiError(500, "Failed to upload new attachment");
-
-    todo.attachment = {
-      url: uploadedFile.secure_url,
-      publicId: uploadedFile.public_id,
-      fileName: req.file.originalname,
-      fileType: req.file.mimetype,
-      fileSize: req.file.size,
-      uploadedAt: new Date(),
-    };
+    if (uploadedFile) {
+      todo.attachment = {
+        url: uploadedFile.secure_url,
+        publicId: uploadedFile.public_id,
+        fileName: req.file.originalname,
+        fileType: req.file.mimetype,
+        fileSize: req.file.size,
+        uploadedAt: new Date(),
+      };
+    } else {
+      todo.attachment = {
+        url: `/temp/${req.file.filename || req.file.originalname}`,
+        publicId: null,
+        fileName: req.file.originalname,
+        fileType: req.file.mimetype,
+        fileSize: req.file.size,
+        uploadedAt: new Date(),
+      };
+    }
   }
 
   if (updates.removeAttachment === "true" && todo.attachment?.publicId) {
@@ -169,16 +206,29 @@ const updateTodo = asyncHandler(async (req, res) => {
     if (updates[field] !== undefined) todo[field] = updates[field];
   });
 
-  if (updates.tags)
-    todo.tags =
-      typeof updates.tags === "string"
-        ? JSON.parse(updates.tags)
-        : updates.tags;
-  if (updates.subtasks)
-    todo.subtasks =
-      typeof updates.subtasks === "string"
-        ? JSON.parse(updates.subtasks)
-        : updates.subtasks;
+  if (updates.tags) {
+    if (Array.isArray(updates.tags)) {
+      todo.tags = updates.tags;
+    } else if (typeof updates.tags === "string") {
+      try {
+        todo.tags = JSON.parse(updates.tags);
+      } catch (e) {
+        todo.tags = updates.tags.split(",").map((t) => t.trim()).filter(Boolean);
+      }
+    }
+  }
+
+  if (updates.subtasks) {
+    if (Array.isArray(updates.subtasks)) {
+      todo.subtasks = updates.subtasks;
+    } else if (typeof updates.subtasks === "string") {
+      try {
+        todo.subtasks = JSON.parse(updates.subtasks);
+      } catch (e) {
+        todo.subtasks = [];
+      }
+    }
+  }
 
   await todo.save();
 

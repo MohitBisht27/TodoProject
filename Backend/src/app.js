@@ -6,9 +6,7 @@ import todoRouter from "./routes/todo.routes.js";
 const app = express();
 
 const allowedOrigins = [
-  "https://kaamtodo.netlify.app",
-  "http://localhost:5173",
-  "http://localhost:5174",
+  "https://kaamtodo.netlify.app"
 ];
 
 app.use(
@@ -37,5 +35,17 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/todos/", todoRouter);
+
+// Global Express Error Handling Middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    statusCode,
+    success: false,
+    message,
+    errors: err.errors || [],
+  });
+});
 
 export { app };

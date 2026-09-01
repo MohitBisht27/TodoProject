@@ -4,6 +4,7 @@ import { TaskProvider } from "./context/TaskContext";
 import CategoriesPage from "./pages/CategoriesPage";
 import CreateTaskPage from "./pages/CreateTaskPage";
 import TasksPage from "./pages/TasksPage";
+import SingleTodoPage from "./pages/SingleTodoPage";
 import Navbar from "./components/Navbar";
 
 export function App() {
@@ -17,6 +18,9 @@ export function App() {
             <Route path="/create-task" element={<CreateTaskPage />} />
             <Route path="/edit-task/:id" element={<CreateTaskPage />} />
             <Route path="/tasks" element={<TasksPage />} />
+            {/* Dedicated Single Todo Page accepting query parameter (?id=...) or path param */}
+            <Route path="/todo" element={<SingleTodoPage />} />
+            <Route path="/todo/:id" element={<SingleTodoPage />} />
             <Route path="*" element={<Navigate to="/categories" replace />} />
           </Routes>
 
