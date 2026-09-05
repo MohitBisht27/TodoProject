@@ -79,14 +79,17 @@ export const SingleTodoPage = () => {
     if (!todo) return;
     setTodo((prev) => ({
       ...prev,
-      subtasks: prev.subtasks.map((s) =>
-        s._id === subtaskId || s.id === subtaskId ? { ...s, completed: !s.completed } : s
+      subtasks: (prev.subtasks || []).map((s) =>
+        String(s._id || s.id) === String(subtaskId) ? { ...s, completed: !s.completed } : s
       ),
     }));
     try {
-      await toggleSubtask(todo._id || todo.id, subtaskId);
+      const updatedTodo = await toggleSubtask(todo._id || todo.id, subtaskId);
+      if (updatedTodo) {
+        setTodo(updatedTodo);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error toggling subtask:", err);
     }
   };
 

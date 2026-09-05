@@ -260,7 +260,19 @@ const toggleSubtask = asyncHandler(async (req, res) => {
   const todo = await Todo.findOne({ _id: id, isDeleted: false });
   if (!todo) throw new ApiError(404, "Todo not found");
 
-  const subtask = todo.subtasks.id(subtaskId);
+  let subtask = null;
+  try {
+    subtask = todo.subtasks.id(subtaskId);
+  } catch (e) {
+    subtask = null;
+  }
+
+  if (!subtask) {
+    subtask = todo.subtasks.find(
+      (s) => String(s._id || s.id) === String(subtaskId)
+    );
+  }
+
   if (!subtask) throw new ApiError(404, "Subtask not found");
 
   subtask.completed = !subtask.completed;

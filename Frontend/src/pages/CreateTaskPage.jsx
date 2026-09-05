@@ -13,6 +13,8 @@ import {
   Calendar as CalendarIcon,
   ArrowLeft,
   CheckCircle2,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 
 export const CreateTaskPage = () => {
@@ -136,6 +138,12 @@ export const CreateTaskPage = () => {
 
   const handleRemoveSubtask = (index) => {
     setSubtasks(subtasks.filter((_, i) => i !== index));
+  };
+
+  const handleToggleSubtask = (index) => {
+    setSubtasks((prev) =>
+      prev.map((st, i) => (i === index ? { ...st, completed: !st.completed } : st))
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -459,13 +467,30 @@ export const CreateTaskPage = () => {
                         key={idx}
                         className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 px-4 py-2.5 rounded-xl text-sm border border-gray-100 dark:border-gray-700"
                       >
-                        <span className="text-gray-800 dark:text-gray-200 font-medium">
-                          {st.title}
-                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSubtask(idx)}
+                          className="flex items-center space-x-3 cursor-pointer flex-1 min-w-0 pr-2 text-left"
+                        >
+                          {st.completed ? (
+                            <CheckSquare className="w-5 h-5 text-[#9D72FF] dark:text-purple-400 flex-shrink-0" />
+                          ) : (
+                            <Square className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                          )}
+                          <span
+                            className={
+                              st.completed
+                                ? "line-through text-gray-400 dark:text-gray-500 font-medium truncate"
+                                : "text-gray-800 dark:text-gray-200 font-medium truncate"
+                            }
+                          >
+                            {st.title}
+                          </span>
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleRemoveSubtask(idx)}
-                          className="text-gray-400 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 cursor-pointer"
+                          className="text-gray-400 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 cursor-pointer flex-shrink-0"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

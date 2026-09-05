@@ -18,13 +18,14 @@ import {
 import { useTasks } from "../context/TaskContext";
 import { getAttachmentUrl } from "../services/api";
 
-export const TodoDetailModal = React.memo(({ todo, onClose }) => {
+export const TodoDetailModal = React.memo(({ todo: initialTodo, onClose }) => {
   const navigate = useNavigate();
-  const { toggleSubtask, toggleTaskStatus, removeTask } = useTasks();
+  const { todos, toggleSubtask, toggleTaskStatus, removeTask } = useTasks();
 
-  if (!todo) return null;
+  if (!initialTodo) return null;
 
-  const todoId = todo._id || todo.id;
+  const todoId = initialTodo._id || initialTodo.id;
+  const todo = todos.find((t) => String(t._id || t.id) === String(todoId)) || initialTodo;
   const isCompleted = todo.status === "completed";
 
   const attachmentUrl = getAttachmentUrl(todo.attachment?.url);

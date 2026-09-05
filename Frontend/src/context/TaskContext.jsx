@@ -117,9 +117,9 @@ export const TaskProvider = ({ children }) => {
   const toggleSubtask = useCallback(async (todoId, subtaskId) => {
     setTodos((prev) =>
       prev.map((t) => {
-        if (t._id !== todoId && t.id !== todoId) return t;
+        if (String(t._id || t.id) !== String(todoId)) return t;
         const updatedSubtasks = (t.subtasks || []).map((s) =>
-          s._id === subtaskId || s.id === subtaskId
+          String(s._id || s.id) === String(subtaskId)
             ? { ...s, completed: !s.completed }
             : s
         );
@@ -131,8 +131,9 @@ export const TaskProvider = ({ children }) => {
       const res = await toggleSubtaskService(todoId, subtaskId);
       if (res.success && res.data) {
         setTodos((prev) =>
-          prev.map((t) => (t._id === todoId || t.id === todoId ? res.data : t))
+          prev.map((t) => (String(t._id || t.id) === String(todoId) ? res.data : t))
         );
+        return res.data;
       }
     } catch (err) {
       console.error("Failed to toggle subtask:", err);
