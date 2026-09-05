@@ -5,17 +5,22 @@ import todoRouter from "./routes/todo.routes.js";
 
 const app = express();
 
-const allowedOrigins = [
-  "https://kaamtodo.netlify.app"
-];
-
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin) || process.env.CORS_ORIGIN === "*") {
+      const allowedOrigins = (process.env.CORS_ORIGIN || "")
+        .split(",")
+        .map((allowedOrigin) => allowedOrigin.trim())
+        .filter(Boolean);
+
+      if (
+        !origin ||
+        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(origin)
+      ) {
         callback(null, true);
       } else {
-        callback(null, true);
+        callback(null, false);
       }
     },
     credentials: true,
