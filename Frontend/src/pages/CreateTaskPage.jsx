@@ -20,18 +20,22 @@ export const CreateTaskPage = () => {
   const { id } = useParams(); // If editing
   const { addTask, editTask, todos } = useTasks();
 
-  const existingTask = id ? todos.find((t) => t._id === id || t.id === id) : null;
+  const existingTask = id
+    ? todos.find((t) => t._id === id || t.id === id)
+    : null;
 
   // Form State matching Backend Schema
   const [title, setTitle] = useState(existingTask?.title || "");
-  const [description, setDescription] = useState(existingTask?.description || "");
+  const [description, setDescription] = useState(
+    existingTask?.description || "",
+  );
   const [category, setCategory] = useState(existingTask?.category || "Idea");
   const [priority, setPriority] = useState(existingTask?.priority || "medium");
   const [dueDate, setDueDate] = useState(
-    existingTask?.dueDate ? new Date(existingTask.dueDate) : new Date()
+    existingTask?.dueDate ? new Date(existingTask.dueDate) : new Date(),
   );
   const [reminder, setReminder] = useState(
-    existingTask?.reminder ? existingTask.reminder.substring(11, 16) : "09:00"
+    existingTask?.reminder ? existingTask.reminder.substring(11, 16) : "09:00",
   );
   const [notes, setNotes] = useState(existingTask?.notes || "");
   const [color, setColor] = useState(existingTask?.color || "#9D72FF");
@@ -50,8 +54,18 @@ export const CreateTaskPage = () => {
   });
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const daysOfWeek = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -66,8 +80,14 @@ export const CreateTaskPage = () => {
   };
 
   const renderCalendarDays = () => {
-    const totalDays = getDaysInMonth(currentYearMonth.year, currentYearMonth.month);
-    const startDay = getFirstDayOfMonth(currentYearMonth.year, currentYearMonth.month);
+    const totalDays = getDaysInMonth(
+      currentYearMonth.year,
+      currentYearMonth.month,
+    );
+    const startDay = getFirstDayOfMonth(
+      currentYearMonth.year,
+      currentYearMonth.month,
+    );
 
     const cells = [];
     for (let i = 0; i < startDay; i++) {
@@ -85,7 +105,11 @@ export const CreateTaskPage = () => {
           key={d}
           type="button"
           onClick={() => {
-            const newD = new Date(currentYearMonth.year, currentYearMonth.month, d);
+            const newD = new Date(
+              currentYearMonth.year,
+              currentYearMonth.month,
+              d,
+            );
             setDueDate(newD);
           }}
           className={`h-9 w-9 mx-auto flex items-center justify-center rounded-xl text-sm font-semibold transition-all cursor-pointer ${
@@ -95,7 +119,7 @@ export const CreateTaskPage = () => {
           }`}
         >
           {d}
-        </button>
+        </button>,
       );
     }
     return cells;
@@ -103,7 +127,10 @@ export const CreateTaskPage = () => {
 
   const handleAddSubtask = () => {
     if (!subtaskInput.trim()) return;
-    setSubtasks([...subtasks, { title: subtaskInput.trim(), completed: false }]);
+    setSubtasks([
+      ...subtasks,
+      { title: subtaskInput.trim(), completed: false },
+    ]);
     setSubtaskInput("");
   };
 
@@ -195,7 +222,7 @@ export const CreateTaskPage = () => {
             {id ? "Edit Task Details" : "Create New Task"}
           </h1>
           <p className="text-sm font-semibold text-purple-100 dark:text-purple-200 mt-1">
-            Fill out the details below to schedule your task directly in MongoDB
+            Fill out the details below to schedule your task directly.
           </p>
         </div>
       </div>
@@ -284,7 +311,9 @@ export const CreateTaskPage = () => {
                     <div className="p-2.5 bg-white dark:bg-gray-900 rounded-xl text-[#9D72FF] dark:text-purple-400 shadow-xs">
                       <CategoryIcon className="w-6 h-6" />
                     </div>
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">{category}</span>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      {category}
+                    </span>
                   </div>
                   <ChevronDown
                     className={`w-5 h-5 text-purple-600 dark:text-purple-400 transition-transform ${
@@ -307,7 +336,9 @@ export const CreateTaskPage = () => {
                           className="flex items-center space-x-3 p-3 rounded-xl hover:bg-purple-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
                         >
                           <IconComp className="w-5 h-5 text-[#9D72FF] dark:text-purple-400" />
-                          <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{cat.name}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                            {cat.name}
+                          </span>
                         </div>
                       );
                     })}
@@ -428,7 +459,9 @@ export const CreateTaskPage = () => {
                         key={idx}
                         className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 px-4 py-2.5 rounded-xl text-sm border border-gray-100 dark:border-gray-700"
                       >
-                        <span className="text-gray-800 dark:text-gray-200 font-medium">{st.title}</span>
+                        <span className="text-gray-800 dark:text-gray-200 font-medium">
+                          {st.title}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveSubtask(idx)}
