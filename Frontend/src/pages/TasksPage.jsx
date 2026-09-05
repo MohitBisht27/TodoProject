@@ -16,8 +16,6 @@ import {
   Loader2,
   Paperclip,
   Calendar,
-  Search,
-  X,
 } from "lucide-react";
 
 export const TasksPage = () => {
@@ -33,8 +31,6 @@ export const TasksPage = () => {
     removeTask,
     selectedCategory,
     setSelectedCategory,
-    searchQuery,
-    setSearchQuery,
   } = useTasks();
 
   // Modal State for viewing full details of a todo item
@@ -51,24 +47,9 @@ export const TasksPage = () => {
     );
   };
 
-  // Filter tasks based on search query, category, and date
+  // Filter tasks based on category and date
   const filteredTodos = useMemo(() => {
     return todos.filter((t) => {
-      // Search filter across title, description, category, and notes
-      if (searchQuery && searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const matchTitle = t.title?.toLowerCase().includes(q);
-        const matchDesc = t.description?.toLowerCase().includes(q);
-        const matchCat = t.category?.toLowerCase().includes(q);
-        const matchNotes = t.notes?.toLowerCase().includes(q);
-
-        if (!matchTitle && !matchDesc && !matchCat && !matchNotes) {
-          return false;
-        }
-        // When searching, bypass strict date filter so user can find matching tasks anywhere
-        return true;
-      }
-
       let matchesCategory = true;
       const activeCat = categoryFilter || selectedCategory;
       if (activeCat) {
@@ -82,7 +63,7 @@ export const TasksPage = () => {
 
       return matchesCategory && matchesDate;
     });
-  }, [todos, categoryFilter, selectedCategory, selectedDate, searchQuery]);
+  }, [todos, categoryFilter, selectedCategory, selectedDate]);
 
   // Format header date string e.g. "14 Sept"
   const formattedHeaderDate = useMemo(() => {
@@ -153,16 +134,12 @@ export const TasksPage = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-black tracking-tight">
-                {searchQuery
-                  ? "Search Results"
-                  : categoryFilter
+                {categoryFilter
                   ? `${categoryFilter} Tasks`
                   : "Today's Schedule"}
               </h1>
               <p className="text-sm font-semibold text-purple-100 dark:text-purple-200 mt-2">
-                {searchQuery
-                  ? `Found ${filteredTodos.length} ${filteredTodos.length === 1 ? "match" : "matches"} for "${searchQuery}"`
-                  : `Managing ${filteredTodos.length} ${filteredTodos.length === 1 ? "Task" : "Tasks"} for ${formattedHeaderDate}`}
+                {`Managing ${filteredTodos.length} ${filteredTodos.length === 1 ? "Task" : "Tasks"} for ${formattedHeaderDate}`}
               </p>
             </div>
 
@@ -208,36 +185,15 @@ export const TasksPage = () => {
       {/* Main Container - Overlapping Card */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-purple-50 dark:border-gray-800 space-y-8 transition-colors">
-          {/* Active Search Banner Indicator */}
-          {searchQuery && (
-            <div className="flex items-center justify-between p-4 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/60 rounded-2xl">
-              <div className="flex items-center space-x-3 text-purple-900 dark:text-purple-200">
-                <Search className="w-5 h-5 text-[#9D72FF] dark:text-purple-400" />
-                <span className="text-sm font-bold">
-                  Searching for: <strong className="text-[#9D72FF] dark:text-purple-300">"{searchQuery}"</strong>
-                </span>
-              </div>
-              <button
-                onClick={() => setSearchQuery("")}
-                className="flex items-center space-x-1 px-3 py-1 bg-white dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-gray-700 text-[#9D72FF] dark:text-purple-300 rounded-xl text-xs font-bold border border-purple-200 dark:border-gray-700 transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-                <span>Clear Search</span>
-              </button>
-            </div>
-          )}
-
-          {/* Date Ribbon (Hidden during global search mode) */}
-          {!searchQuery && (
-            <div>
-              <DateRibbon />
-            </div>
-          )}
+          {/* Date Ribbon */}
+          <div>
+            <DateRibbon />
+          </div>
 
           {/* Section Heading */}
           <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-              {searchQuery ? "Matching Todos" : "Task Checklist"}
+              Task Checklist
             </h2>
             <span className="text-xs font-bold text-gray-400 dark:text-gray-500">
               Click task for full details
@@ -252,30 +208,19 @@ export const TasksPage = () => {
             </div>
           ) : filteredTodos.length === 0 ? (
             <div className="text-center py-20 bg-purple-50/40 dark:bg-gray-800/40 rounded-3xl border-2 border-dashed border-purple-200 dark:border-gray-700 px-6">
-              <Search className="w-16 h-16 text-purple-300 dark:text-gray-600 mx-auto mb-4" />
+              <CheckSquare className="w-16 h-16 text-purple-300 dark:text-gray-600 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                {searchQuery ? `No tasks found matching "${searchQuery}"` : "No tasks scheduled for this date"}
+                No tasks scheduled for this date
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto">
-                {searchQuery
-                  ? "Try checking your spelling or clearing the search query."
-                  : "Create a task to keep track of your activities and goals."}
+                Create a task to keep track of your activities and goals.
               </p>
-              {searchQuery ? (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all cursor-pointer"
-                >
-                  Clear Search Filter
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate("/create-task")}
-                  className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all cursor-pointer"
-                >
-                  + Create New Task
-                </button>
-              )}
+              <button
+                onClick={() => navigate("/create-task")}
+                className="mt-6 px-6 py-3 bg-[#9D72FF] hover:bg-purple-700 text-white font-bold rounded-2xl shadow-md text-sm transition-all cursor-pointer"
+              >
+                + Create New Task
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
